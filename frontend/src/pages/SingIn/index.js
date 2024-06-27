@@ -18,8 +18,8 @@ export default function Login() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const userLogin = () => {
-        handleLogin(username, password, navigation);
+    const userLogin = async () => {
+        await handleLogin(username, password, navigation);
     };
 
     return (

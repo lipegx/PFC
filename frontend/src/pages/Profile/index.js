@@ -12,8 +12,8 @@ export default function ProfileScreen() {
   useEffect(() => {
     const fetchData = async () => {
       const storedUserId = await AsyncStorage.getItem('userId');
+      console.log('Stored user ID:', storedUserId);
       if (storedUserId) {
-        console.log('Fetching user data for ID:', storedUserId); // Log para depuração
         await profileController.fetchUser(storedUserId, setUser);
       }
     };
@@ -22,7 +22,7 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     if (user) {
-      console.log('Fetching posts for user ID:', user.id); // Log para depuração
+      console.log('User data:', user);
       profileController.fetchUserPosts(user.id, setPosts);
     }
   }, [user]);
@@ -54,20 +54,16 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      {user && (
-        <>
-          <Image source={{ uri: user.photo }} style={styles.profilePhoto} />
-          <Button title="Alterar Foto" onPress={() => handlePhotoChange('https://example.com/new-photo.jpg')} />
-          <Text style={styles.username}>{user.name}</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="Escreva algo..."
-            value={newPostContent}
-            onChangeText={setNewPostContent}
-          />
-          <Button title="Publicar" onPress={handleCreatePost} />
-        </>
-      )}
+      <Image source={{ uri: user.photo }} style={styles.profilePhoto} />
+      <Button title="Alterar Foto" onPress={() => handlePhotoChange('https://example.com/new-photo.jpg')} />
+      <Text style={styles.username}>{user.name}</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Escreva algo..."
+        value={newPostContent}
+        onChangeText={setNewPostContent}
+      />
+      <Button title="Publicar" onPress={handleCreatePost} />
       <FlatList
         data={posts}
         keyExtractor={(item) => item.id.toString()}
