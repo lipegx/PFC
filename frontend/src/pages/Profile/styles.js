@@ -16,6 +16,12 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
   },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
+    marginVertical: 8,
+  },
   post: {
     marginBottom: 16,
     padding: 16,

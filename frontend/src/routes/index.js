@@ -45,7 +45,7 @@ export default function Routes() {
             options={{headerShown: false}} 
             />
             <stack.Screen 
-            name="Feed" 
+            name="ProfileScreen" 
             component={ProfileScreen}
             options={{headerShown: false}} 
             />

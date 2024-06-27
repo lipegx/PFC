@@ -35,6 +35,9 @@ export default function Home() {
             <animatable.View delay={1000} animation='fadeInUp' style={styles.containerForm}>
                 <Text style={styles.login}>Bem vindo, {userName}.</Text>
                 
+                <TouchableOpacity  onPress={() => navigation.navigate('ProfileScreen')} style={styles.button}>
+                    <Text style={styles.buttonText}>Ir para o perfil</Text>
+                </TouchableOpacity>
                 <TouchableOpacity  onPress={() => navigation.navigate('UserList')} style={styles.button}>
                     <Text style={styles.buttonText}>Listar Usuários</Text>
                 </TouchableOpacity>

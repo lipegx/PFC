@@ -13,7 +13,9 @@ export const handleLogin = async (username, password, navigation) => {
       console.log('Login Success:', response.data)
       navigation.navigate('home');
       const userName = username; 
-      AsyncStorage.setItem('userName', userName)
+      AsyncStorage.setItem('userName', userName);
+      await AsyncStorage.setItem('authToken', token);
+      await AsyncStorage.setItem('userId', response.user.id)
         .then(() => {
           console.log('Nome do usuário salvo!');
         })

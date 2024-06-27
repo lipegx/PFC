@@ -1,61 +1,56 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, Image, Button, FlatList, TextInput } from 'react-native';
-import { getUser, getUserPosts, updateUserPhoto, likePost, createPost } from '../../services/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import profileController from './profile.controller.js';
 import styles from './styles';
 
-export default function ProfileScreen () {
+export default function ProfileScreen() {
   const [user, setUser] = useState(null);
   const [posts, setPosts] = useState([]);
   const [newPostContent, setNewPostContent] = useState('');
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userData = await getUser();
-        setUser(userData);
-        const userPosts = await getUserPosts(userData.id);
-        setPosts(userPosts);
-      } catch (error) {
-        console.error('Failed to fetch user data', error);
+    const fetchData = async () => {
+      const storedUserId = await AsyncStorage.getItem('userId');
+      if (storedUserId) {
+        console.log('Fetching user data for ID:', storedUserId); // Log para depuração
+        await profileController.fetchUser(storedUserId, setUser);
       }
     };
-
-    fetchUserData();
+    fetchData();
   }, []);
 
-  const handlePhotoChange = async (newPhotoUrl) => {
-    try {
-      const updatedUser = await updateUserPhoto(newPhotoUrl);
-      setUser(updatedUser);
-    } catch (error) {
-      console.error('Failed to update photo', error);
+  useEffect(() => {
+    if (user) {
+      console.log('Fetching posts for user ID:', user.id); // Log para depuração
+      profileController.fetchUserPosts(user.id, setPosts);
     }
+  }, [user]);
+
+  const handlePhotoChange = async (newPhotoUrl) => {
+    profileController.changeProfilePhoto(setUser, newPhotoUrl);
   };
 
   const handleLike = async (postId) => {
     if (user) {
-      try {
-        const updatedPost = await likePost(postId, user.id);
-        setPosts((prevPosts) =>
-          prevPosts.map((post) => (post.id === updatedPost.id ? updatedPost : post))
-        );
-      } catch (error) {
-        console.error('Failed to like post', error);
-      }
+      profileController.likePost(postId, posts, setPosts, user.id);
     }
   };
 
   const handleCreatePost = async () => {
     if (user && newPostContent.trim()) {
-      try {
-        const newPost = await createPost(newPostContent, user.id);
-        setPosts((prevPosts) => [newPost, ...prevPosts]);
-        setNewPostContent('');
-      } catch (error) {
-        console.error('Failed to create post', error);
-      }
+      profileController.createPost(newPostContent, user.id, setPosts);
+      setNewPostContent('');
     }
   };
+
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -86,4 +81,4 @@ export default function ProfileScreen () {
       />
     </View>
   );
-};
+}
