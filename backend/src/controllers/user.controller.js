@@ -153,4 +153,36 @@ const listUsers = async (req, res) => {
     }
 };
 
-module.exports = { create, loginUser, deleteUser, update, listUsers };
+
+const updateUserPhoto = async (req, res) => {
+  const { photo } = req.body;
+  const userId = req.user.id; // O ID do usuário deve ser obtido do token
+
+  try {
+    const user = await User.findByIdAndUpdate(userId, { photo }, { new: true });
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    res.status(200).send(user);
+  } catch (error) {
+    console.error('Error updating profile photo:', error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+};
+
+const getUserById = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findById(id, '-password');
+    if (!user) {
+      return res.status(404).send({ message: 'User not found' });
+    }
+    res.status(200).send(user);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).send({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { create, loginUser, deleteUser, update, listUsers, getUserById, updateUserPhoto};

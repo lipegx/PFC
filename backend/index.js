@@ -14,7 +14,7 @@ connectDB();
 app.use(cors());
 app.use(express.json());
 app.use('/auth', userRoute);
-app.use('/users', require('./src/routes/user.route'));
+app.use('/users', checkToken, require('./src/routes/user.route'));
 app.use('/listUsers', listRoute);
 app.use('/posts', checkToken, require ('./src/routes/post.route'))
 

@@ -19,7 +19,7 @@ export const handleLogin = async (username, password, navigation) => {
     await AsyncStorage.setItem('userName', username)
       .then(() => {
         console.log('Nome do usuário salvo!');
-        navigation.navigate('ProfileScreen');
+        navigation.navigate('home');
       })
       .catch(error => {
         console.log('Erro ao salvar nome do usuário:', error);

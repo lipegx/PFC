@@ -22,6 +22,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true
+    },
+    photo: {
+        type: String,
+        default: 'https://example.com/default.jpg'
     }
 });
 

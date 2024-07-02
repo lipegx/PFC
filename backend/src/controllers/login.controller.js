@@ -2,9 +2,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
 
-const users = [
-  { id: 1, username: 'test', password: '$2b$10$KIX/fWOB6x8.gkPpz2VPO.8Exs0Sm8ZpY3osvlrAkAz5uOgfQ4HtS' } // senha: test123
-];
+const users = [];
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
