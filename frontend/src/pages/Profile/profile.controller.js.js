@@ -1,4 +1,4 @@
-import { getUser, getUserPosts, updateUserPhoto, likePost as apiLikePost, createPost as apiCreatePost } from '../../services/api';
+import { api, getUser, getUserPosts, updateUserPhoto, likePost as apiLikePost, createPost as apiCreatePost } from '../../services/api';
 
 const fetchUser = async (id, setUser) => {
   try {
@@ -23,13 +23,14 @@ const fetchUserPosts = async (userId, setPosts) => {
   }
 };
 
-const changeProfilePhoto = async (setUser, photoUrl) => {
+const changeProfilePhoto = async (photoUrl) => {
   try {
-    console.log('Updating profile photo with URL:', photoUrl); // Log para depuração
-    const updatedUser = await updateUserPhoto(photoUrl);
-    setUser(updatedUser);
+    const response = await updateUserPhoto(photoUrl);
+    console.log('User photo updated:', response.photo);
+    return response;
   } catch (error) {
     console.error('Error updating profile photo:', error);
+    throw error;
   }
 };
 

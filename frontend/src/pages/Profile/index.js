@@ -3,7 +3,8 @@ import { View, Text, Image, Button, FlatList, TextInput, TouchableOpacity, Alert
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import profileController from './profile.controller.js';
 import styles from './styles';
-import { launchImageLibrary } from 'react-native-image-picker';
+import * as ImagePicker from 'expo-image-picker';
+import api from '../../services/api'; // Certifique-se de usar a instância configurada do Axios
 
 export default function ProfileScreen() {
   const [user, setUser] = useState(null);
@@ -39,26 +40,58 @@ export default function ProfileScreen() {
   }, [user]);
 
   const handlePhotoChange = async () => {
-    const options = {
-      mediaType: 'photo',
-      includeBase64: true,
-    };
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+      return;
+    }
 
-    launchImageLibrary(options, async (response) => {
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      } else if (response.errorCode) {
-        console.error('ImagePicker Error: ', response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        const photoUri = response.assets[0].uri;
-
-        try {
-          await profileController.changeProfilePhoto(setUser, photoUri);
-        } catch (error) {
-          console.error('Error changing profile photo:', error);
-        }
-      }
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
     });
+
+    console.log('ImagePicker result:', result);
+
+    if (!result.canceled) {
+      const localUri = result.assets[0].uri;
+      console.log('Image URI:', localUri);
+
+      if (!localUri) {
+        console.error('Image URI is undefined');
+        return;
+      }
+
+      const filename = localUri.split('/').pop();
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : `image`;
+
+      const formData = new FormData();
+      formData.append('photo', { uri: localUri, name: filename, type });
+
+      try {
+        const response = await api.post('/api/upload', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+
+        const imageUrl = response.data.imageUrl;
+        console.log('Image uploaded to:', imageUrl);
+
+        // Atualize a foto do usuário no backend
+        const updatedUser = await profileController.changeProfilePhoto(imageUrl);
+        console.log('Updated user data:', updatedUser);
+
+        setUser(updatedUser); // Atualize o estado do usuário com a nova URL da foto
+        console.log('User photo updated:', updatedUser.photo);
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+        console.error('Response error:', error.response?.data || error.message);
+      }
+    }
   };
 
   const handleLike = async (postId) => {

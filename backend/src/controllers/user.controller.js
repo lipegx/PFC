@@ -155,22 +155,28 @@ const listUsers = async (req, res) => {
 
 
 const updateUserPhoto = async (req, res) => {
-  const { photo } = req.body;
-  const userId = req.user.id; // O ID do usuário deve ser obtido do token
-
-  try {
-    const user = await User.findByIdAndUpdate(userId, { photo }, { new: true });
-    if (!user) {
-      return res.status(404).send({ message: 'User not found' });
+    try {
+      const userId = req.user.id; // Obtenha o ID do usuário do token
+      const { photo } = req.body;
+  
+      const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        { photo },
+        { new: true }
+      );
+  
+      if (!updatedUser) {
+        return res.status(404).send({ message: 'User not found' });
+      }
+  
+      console.log('User updated with new photo URL:', updatedUser.photo); // Adicione este log
+  
+      res.status(200).send(updatedUser);
+    } catch (error) {
+      res.status(500).send({ message: 'Server error', error });
     }
-
-    res.status(200).send(user);
-  } catch (error) {
-    console.error('Error updating profile photo:', error);
-    res.status(500).send({ message: 'Internal server error' });
-  }
-};
-
+  };
+  
 const getUserById = async (req, res) => {
   const { id } = req.params;
   try {

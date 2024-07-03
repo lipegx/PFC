@@ -7,6 +7,9 @@ const port = 3000;
 const connectDB = require('./src/database/db');
 const cors = require('cors');
 const checkToken = require('./src/middlewares/user.middlewares');
+const imageUploadRouter = require('./src/routes/imageUpload');
+const path = require('path')
+const fileUpload = require('express-fileupload');
 
 
 connectDB();
@@ -17,6 +20,11 @@ app.use('/auth', userRoute);
 app.use('/users', checkToken, require('./src/routes/user.route'));
 app.use('/listUsers', listRoute);
 app.use('/posts', checkToken, require ('./src/routes/post.route'))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api', imageUploadRouter);
+app.use(fileUpload({
+  limits: { fileSize: 50 * 1024 * 1024 },
+}));
 
 
 
