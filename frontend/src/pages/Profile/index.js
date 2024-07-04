@@ -123,7 +123,7 @@ export default function ProfileScreen() {
   const showLikes = (likes) => {
     if (likes.length > 0) {
       const likesString = likes.map(like => like.name).join('\n');
-      Alert.alert('Users who liked this post', likesString);
+      Alert.alert('Curtido por', likesString);
     }
   };
 
@@ -137,26 +137,42 @@ export default function ProfileScreen() {
 
   return (
     <View style={styles.container}>
-      <Image source={{ uri: user.photo }} style={styles.profilePhoto} />
-      <Button title="Alterar Foto" onPress={handlePhotoChange} />
-      <Text style={styles.username}>{user.name}</Text>
+    <Image source={{ uri: user.photo }} style={styles.profilePhoto} />
+    <Button title="Alterar Foto" onPress={handlePhotoChange} />
+    <Text style={styles.username}>{user.name}</Text>
+    <View style={styles.inputContainer}>
       <TextInput
-        style={styles.input}
-        placeholder="Escreva algo..."
-        value={newPostContent}
-        onChangeText={setNewPostContent}
-      />
-      <Button title="Publicar" onPress={handleCreatePost} />
+          style={styles.input}
+          placeholder="Escreva algo..."
+          value={newPostContent}
+          onChangeText={setNewPostContent}
+        />
+        <TouchableOpacity style={styles.publishButton} onPress={handleCreatePost}>
+          <Text style={styles.publishButtonText}>Publicar</Text>
+        </TouchableOpacity>
+      </View>
       <FlatList
         data={posts}
         keyExtractor={(item) => item._id ? item._id.toString() : 'undefined'}
         renderItem={({ item }) => (
           <View style={styles.post}>
-            <Text>{item.content}</Text>
-            <Button title="Curtir" onPress={() => handleLike(item._id)} />
-            <TouchableOpacity onPress={() => showLikes(item.likes)}>
-              <Text>{item.likes.length} curtidas</Text>
-            </TouchableOpacity>
+            <View style={styles.idPost}>
+            <Image source={{ uri: item.userPhoto || user.photo }} style={styles.postAvatar} />
+            <Text style={styles.postUsername}>{user.name}</Text>
+            </View>
+            <View style={styles.postContainer}>
+              <View style={styles.postContentContainer}>
+                <Text style={styles.postContent}>{item.content}</Text>
+                <View style={styles.postActions}>
+                  <TouchableOpacity style={styles.postButton} onPress={() => handleLike(item._id)}>
+                    <Text style={styles.postButtonText}>Curtir</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => showLikes(item.likes)}>
+                    <Text style={styles.likesText}>{item.likes.length} curtidas</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
           </View>
         )}
         ListEmptyComponent={<Text>Nenhum post ainda. Seja o primeiro a postar!</Text>}
