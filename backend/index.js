@@ -24,7 +24,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', imageUploadRouter);
 app.use(fileUpload({
   limits: { fileSize: 50 * 1024 * 1024 },
-}));
+})); // default options
 
 
 
